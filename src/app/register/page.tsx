@@ -1,17 +1,19 @@
 "use client";
 import axios, { AxiosError } from "axios";
+import { useRouter } from "next/navigation";
 import React, { FormEvent, useState } from "react";
 import Swal from "sweetalert2";
 
 const RegistrationForm = () => {
   const [role, setRole] = useState("TeamMember");
+  const router = useRouter();
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const formData = new FormData(e.currentTarget);
     try {
-      const res = await axios.post("/api/auth/signup", {
+      const formData = new FormData(e.currentTarget);
+      const signupResponse = await axios.post("/api/auth/signup", {
         email: formData.get("email"),
         password: formData.get("password"),
         fullname: formData.get("fullname"),
@@ -21,8 +23,11 @@ const RegistrationForm = () => {
       Swal.fire({
         icon: "success",
         title: "Success",
-        text: res.data.message,
+        text: signupResponse.data.message,
       });
+
+      // return to dashboard after user's registration
+      router.push("/dashboard");
     } catch (error) {
       console.error(error);
       if (error instanceof AxiosError) {
