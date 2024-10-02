@@ -1,13 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from 'next/navigation';
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 import Swal from "sweetalert2";
 
 function Navbar() {
+  const [isMounted, setIsMounted] = useState(false);
   const { data: session } = useSession();
-  const [isOpen, setIsOpen] = useState(false); // State for accordion
+  const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true); // Marcar como montado en el cliente
+  }, []);
+
+  if (!isMounted) return null; // Evitar que se renderice en el servidor.
+
+  const router = useRouter();
 
   const handleSignOut = async () => {
     const result = await Swal.fire({
@@ -20,9 +30,10 @@ function Navbar() {
       confirmButtonText: "Yes, log out",
       cancelButtonText: "Cancel",
     });
-
+  
     if (result.isConfirmed) {
-      signOut();
+      await signOut({ redirect: false });
+      router.push("/login"); // Redirige al login tras cerrar sesión
     }
   };
 
@@ -37,11 +48,6 @@ function Navbar() {
           href="/"
           className="flex items-center space-x-3 rtl:space-x-reverse"
         >
-          {/* <img
-            src="https://flowbite.com/docs/images/logo.svg"
-            className="h-8"
-            alt="Logo"
-          /> */}
           <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
             Logo
           </span>
@@ -80,8 +86,16 @@ function Navbar() {
               <>
                 <li>
                   <Link
-                    href="/dashboard"
+                    href="/home"
                     className="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500"
+                  >
+                    Home
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/dashboard"
+                    className="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white"
                     aria-current="page"
                   >
                     Dashboard

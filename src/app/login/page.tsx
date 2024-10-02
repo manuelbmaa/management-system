@@ -23,9 +23,9 @@ const LoginForm = () => {
         Swal.fire({
           icon: "success",
           title: "Login Successful",
-          text: "Redirecting to dashboard...",
+          text: "Redirecting to home...",
         });
-        router.push("/dashboard"); // return to dashboard
+        router.push("/home"); // return to home
       } else {
         Swal.fire({
           icon: "error",
