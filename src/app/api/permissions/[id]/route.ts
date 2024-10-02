@@ -12,7 +12,7 @@ export async function GET(
     if (!id) {
       return NextResponse.json(
         {
-          message: "Permission ID is required",
+          message: "Permission ID is requiredddd",
         },
         { status: 400 }
       );
