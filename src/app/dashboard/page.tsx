@@ -1,48 +1,56 @@
 "use client";
 
-import { useSession } from "next-auth/react";
 import { useState } from "react";
 import ProjectCard from "../../components/ProjectCard"; // Componente para mostrar el proyecto
 import { Project } from "../models/project";
 
 function DashboardPage() {
-  const { data: session, status } = useSession();
-  const [projects, setProjects] = useState<Project[]>([]); // Estado para proyectos
+  const [projects, setProjects] = useState<Project[]>([]);
   const [newProjectName, setNewProjectName] = useState("");
+  const [isProjectError, setIsProjectError] = useState(false);
 
-  const handleCreateProject = () => {
-    const newProject = {
+  const handleAddProject = () => {
+    if (!newProjectName.trim()) {
+      setIsProjectError(true);
+      return;
+    }
+    setIsProjectError(false);
+    const newProject: Project = {
       id: Date.now().toString(),
       name: newProjectName,
       tasks: [],
     };
     setProjects([...projects, newProject]);
-    setNewProjectName(""); // Limpiar el formulario
+    setNewProjectName(""); // Limpiar el input
   };
 
-  if (status === "loading") return <p>Loading...</p>;
-  if (!session) return <p>Please sign in to access the dashboard</p>;
+  const handleDeleteProject = (projectId: string) => {
+    setProjects(projects.filter((project) => project.id !== projectId));
+  };
 
   return (
-    <div className="p-5">
-      <h1 className="text-2xl font-bold mb-5">Project Dashboard</h1>
+    <div className="container mx-auto">
+      <h1 className="text-3xl font-bold mb-5">Projects Dashboard</h1>
 
-      <div className="mb-5">
+      {/* Nueva creación de proyecto */}
+      <div className="flex mb-5">
         <input
           type="text"
-          placeholder="New Project Name"
+          placeholder="New Project"
           value={newProjectName}
           onChange={(e) => setNewProjectName(e.target.value)}
-          className="input input-bordered"
+          className="input input-bordered w-full"
         />
-        <button onClick={handleCreateProject} className="btn btn-primary ml-2">
-          Create Project
+        <button onClick={handleAddProject} className="btn btn-primary ml-2">
+          Add Project
         </button>
       </div>
+      {isProjectError && <p className="text-red-500">El nombre del proyecto no puede estara vacio!</p>}
 
+      {/* Mostrar lista de proyectos */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {projects.map((project) => (
-          <ProjectCard key={project.id} project={project} />
+          <ProjectCard key={project.id} project={project} onDelete={handleDeleteProject} />
         ))}
       </div>
     </div>
