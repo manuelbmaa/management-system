@@ -81,7 +81,7 @@ const AdminUserManagement = () => {
   return (
     <div className="max-w-4xl mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">User Management</h1>
-      <p className="mb-4">Welcome to the admin dashboard! Here you can manage users by creating new accounts, editing user details, or removing users from the system.</p>
+      <p className="mb-4">Welcome to the admin page! Here you can manage users by creating new accounts, editing user details, or removing users from the system.</p>
       <button onClick={() => setIsCreateUserOpen(true)} className="bg-blue-500 text-white p-2 rounded mb-4">
         Create User
       </button>

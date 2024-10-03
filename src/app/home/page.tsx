@@ -1,6 +1,7 @@
 "use client";
 import { useSession } from "next-auth/react";
 import AdminUserManagement from "@/components/AdminUserManagement";
+import ProjectManagerHome from "@/components/ProjectManagerHome";
 
 function HomePage() {
   const { data: session, status } = useSession();
@@ -17,6 +18,9 @@ function HomePage() {
         <>
           <AdminUserManagement />
         </>
+      )}
+      {session.user.role === "ProjectManager" && (
+        <ProjectManagerHome />
       )}
     </div>
   );

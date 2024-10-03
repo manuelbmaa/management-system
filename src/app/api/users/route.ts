@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import User from "@/app/models/user";
 import { connectDB } from "@/app/libs/mongodb";
+import bcrypt from 'bcrypt';
 
 // Obtener usuario(s)
 export async function GET(request: Request) {
@@ -73,12 +74,23 @@ export async function PUT(request: Request) {
 export async function POST(request: Request) {
   try {
     const { email, fullname, password, role } = await request.json();
-    
-    // Validar y crear el usuario
+
+    // Validar si la contraseña tiene al menos 6 caracteres
+    if (!password || password.length < 6) {
+      return NextResponse.json(
+        { message: "Password must be at least 6 characters long" },
+        { status: 400 }
+      );
+    }
+
+    // Encriptar la contraseña con bcrypt
+    const hashedPassword = await bcrypt.hash(password, 12);
+
+    // Validar y crear el usuario con la contraseña encriptada
     const newUser = new User({
       email,
       fullname,
-      password,
+      password: hashedPassword, // Asignar la contraseña encriptada
       role,
     });
 
