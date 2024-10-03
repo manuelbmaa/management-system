@@ -2,6 +2,7 @@
 import { useSession } from "next-auth/react";
 import AdminUserManagement from "@/components/AdminUserManagement";
 import ProjectManagerHome from "@/components/ProjectManagerHome";
+import TeamMemberHome from "@/components/TeamMemberHome";
 
 function HomePage() {
   const { data: session, status } = useSession();
@@ -21,6 +22,9 @@ function HomePage() {
       )}
       {session.user.role === "ProjectManager" && (
         <ProjectManagerHome />
+      )}
+      {session.user.role === "TeamMember" && (
+        <TeamMemberHome />
       )}
     </div>
   );
