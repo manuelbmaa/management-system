@@ -345,8 +345,7 @@ const ProjectManagerHome = () => {
               </div>
             )}
 
-            {/* Comments Section */}
-            <CommentsSection projectId={project._id as string} currentUser={currentUser} />
+
           </div>
         ))
       ) : (
