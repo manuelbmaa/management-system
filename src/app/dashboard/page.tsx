@@ -1,10 +1,28 @@
 "use client";
+
 import { Pie, Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement } from 'chart.js';
+import { useState, useEffect } from 'react';
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
 
 function DashboardPage() {
+  const [userCount, setUserCount] = useState(0); //Estado para almacenar el número de usuarios
+
+  //Función para obtener el número de usuarios
+  const fetchUserCount = async () => {
+    try {
+      const response = await fetch('/api/users'); 
+      const data = await response.json();
+      setUserCount(data.users.length); //Asigna el número de usuarios 
+    } catch (error) {
+      console.error('Error fetching user count:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchUserCount(); 
+  }, []);
   //Configuración para color labels
   const options = {
     plugins: {
@@ -109,7 +127,8 @@ function DashboardPage() {
             </div>
             <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl border border-black transition">
               <h3 className="text-xl font-semibold text-black mb-4">Usuarios</h3>
-              <p className="text-2xl font-bold text-black">3</p>
+              {/* Muestra el número de usuarios de la base de datos */}
+              <p className="text-2xl font-bold text-black">{userCount}</p> 
             </div>
           </div>
 
