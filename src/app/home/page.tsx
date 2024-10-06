@@ -18,29 +18,25 @@ function HomePage() {
       const userRole = session?.user?.role;
 
       if (userRole !== "Admin" && userRole !== "ProjectManager") {
-        router.push("/access-denied");  //Redirige si no es Admin o Project Manager
+        return router.push("/access-denied");  //Redirige si no es Admin o Project Manager
       }
     } else if (status === "unauthenticated") {
-      router.push("/login");  //Redirige al login si no está autenticado
+      return router.push("/login");  //Redirige al login si no está autenticado
     }
   }, [status, session, router]);
-
-  if (!session || !session.user) {
-    return <div>Access Denied</div>;
-  }
 
   return (
     <div className="dark:text-white max-w-4xl mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Home</h1>
-      {session.user.role === "Admin" && (
+      {session?.user.role === "Admin" && (
         <>
           <AdminUserManagement />
         </>
       )}
-      {session.user.role === "ProjectManager" && (
+      {session?.user.role === "ProjectManager" && (
         <ProjectManagerHome />
       )}
-      {session.user.role === "TeamMember" && (
+      {session?.user.role === "TeamMember" && (
         <TeamMemberHome />
       )}
     </div>
