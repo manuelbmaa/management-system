@@ -4,211 +4,201 @@ import { Pie, Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement } from 'chart.js';
 import { useState, useEffect } from 'react';
 import { Project } from "../../components/ProjectManagerHome"; 
+import { Member } from "../../components/ProjectManagerHome"; 
+import { useRouter } from 'next/navigation';
+import { useSession } from "next-auth/react";  //Importa useSession de NextAuth
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
 
 function DashboardPage() {
-  const [userCount, setUserCount] = useState(0); //Estado para almacenar el número de usuarios
-  const [projectCount, setProjectCount] = useState(0);
-  const [projects, setProjects] = useState<Project[]>([]); 
+  const { data: session, status } = useSession();  //Accede a la sesión y al estado de autenticación
+  const router = useRouter();
+  const [userCount, setUserCount] = useState(0); //Estado para el número de usuarios
+  const [taskTotalCount, setTaskTotalCount] = useState(0); // stado para el total de tareas
+  const [projectCount, setProjectCount] = useState(0); //Estado para el número total de proyectos
+  const [projects, setProjects] = useState<Project[]>([]); //Estado para la lista de proyectos
   
+  const [roleCount, setRoleCount] = useState({
+    Admin: 0,
+    ProjectManager: 0,
+    TeamMember: 0,
+  });
+  useEffect(() => {
+    //Si el estado de autenticación es "authenticated", verifica el rol del usuario
+    if (status === "authenticated") {
+      const userRole = session?.user?.role;
 
-  //Función para obtener el número de usuarios
+      if (userRole !== "Admin" && userRole !== "ProjectManager") {
+        router.push("/access-denied");  //Redirige si no es Admin o Project Manager
+      }
+    } else if (status === "unauthenticated") {
+      router.push("/login");  //Redirige al login si no está autenticado
+    }
+  }, [status, session, router]);
+
+
+  //Estado para las tareas agregadas en el gráfico de pastel
+  const [taskStats, setTaskStats] = useState({
+    realizadas: 0,
+    pendientes: 0,
+    finalizadas: 0,
+  });
+
+  //Función para obtener el número de usuarios y sus roles
   const fetchUserCount = async () => {
     try {
       const response = await fetch('/api/users'); 
-      const data = await response.json();
-      setUserCount(data.users.length); //Asigna el número de usuarios 
+      const data: { users: Member[] } = await response.json(); //Asigna el tipo 'Member[]' a los usuarios
+
+      setUserCount(data.users.length); //Asigna el número de usuarios
+
+      //Contar roles
+      const adminCount = data.users.filter((user: Member) => user.role === 'Admin').length;
+      const projectManagerCount = data.users.filter((user: Member) => user.role === 'ProjectManager').length;
+      const teamMemberCount = data.users.filter((user: Member) => user.role === 'TeamMember').length;
+
+      setRoleCount({
+        Admin: adminCount,
+        ProjectManager: projectManagerCount,
+        TeamMember: teamMemberCount,
+      });
+
     } catch (error) {
       console.error('Error fetching user count:', error);
     }
   };
 
+  //Función para obtener la lista de proyectos
+  const fetchProjects = async () => {
+    try {
+      const response = await fetch("/api/projects");
+      const data = await response.json();
+      if (data) {
+        setProjects(data); //Se establece la lista de proyectos
+        setProjectCount(data.length); //Se establece el número total de proyectos
+
+        //Se calcula estadísticas de tareas y total de tareas
+        let realizadas = 0;
+        let pendientes = 0;
+        let finalizadas = 0;
+        let totalTareas = 0;
+
+        data.forEach((project: Project) => {
+          totalTareas += project.tasks.length;
+          project.tasks.forEach((task) => {
+            console.log('Tarea:', task.name, 'Estado:', task.status); //Registro para verificar el estado de las tareas
+            if (task.status === 'Completa') {
+              realizadas += 1;
+            } else if (task.status === 'Pendiente') {
+              pendientes += 1;
+            } else if (task.status === 'En progreso') {
+              finalizadas += 1;
+            }
+          });
+        });
+
+        setTaskStats({ realizadas, pendientes, finalizadas });
+        setTaskTotalCount(totalTareas); //Asigna el total de tareas
+      }
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+    }
+  };
+
   useEffect(() => {
-    fetchUserCount(); 
+    fetchUserCount();
+    fetchProjects();
   }, []);
 
-    // Función para obtener la lista de proyectos desde la API
-    const fetchProjects = async () => {
-      try {
-        const response = await fetch("/api/projects");
-        const data = await response.json();
-        if (data) {
-          setProjects(data); // Establece la lista de proyectos
-        }
-      } catch (error) {
-        console.error("Error fetching projects:", error);
-      }
-    };
-  
-    useEffect(() => {
-      fetchProjects();
-    }, []);
-
-    // Función para obtener el número de proyectos desde la API
-    const fetchProjectCount = async () => {
-      try {
-        const response = await fetch("/api/projects");
-        const data = await response.json();
-        if (data) {
-          setProjectCount(data.length); // Establece la cantidad de proyectos
-        }
-      } catch (error) {
-        console.error("Error fetching project count:", error);
-      }
-    };
-  
-    useEffect(() => {
-      fetchProjectCount();
-    }, []);
-  
-  //Configuración para color labels
+  //Configuración para los gráficos
   const options = {
     plugins: {
       legend: {
         labels: {
-          color: 'black', //color
+          color: 'black',
         },
       },
     },
     scales: {
       y: {
         ticks: {
-          color: 'black', //Color  eje Y
+          color: 'black',
         },
       },
       x: {
         ticks: {
-          color: 'blac', //Color eje X
+          color: 'black',
         },
       },
     },
   };
 
-  //Datos para el gráfico de pastel
-  const projectoCompleto = {
-    labels: ['Completado', 'Incompleto'],
-    datasets: [
-      {
-        label: 'Porcentaje Completado',
-        data: [50, 50], // Aquí puedes cambiar el porcentaje dinámicamente
-        backgroundColor: ['#36A2EB', '#FF6384'],
-      },
-    ],
-  };
-
-  // Datos para el gráfico de barras (Tareas)
+  //Datos dinámicos para el gráfico de pastel de tareas
   const tareas = {
-    labels: ['Realizadas', 'Pendientes', 'Finalizadas'],
+    labels: ['Realizadas', 'Pendientes', 'En Progreso'],
     datasets: [
       {
         label: 'Tareas',
-        data: [10, 5, 7], // Aquí puedes ajustar las cifras dinámicamente
+        data: [taskStats.realizadas, taskStats.pendientes, taskStats.finalizadas], // Datos calculados dinámicamente
         backgroundColor: ['#36A2EB', '#FFCE56', '#FF6384'],
       },
     ],
   };
 
-  // Datos para el gráfico de proyectos
+  //Datos para el gráfico de número de proyectos
   const projectoInfo = {
     labels: ['Proyectos'],
     datasets: [
       {
         label: 'Número de Proyectos',
-        data: [12], // Cambia dinámicamente el número de proyectos
+        data: [projectCount], //Datos dinámicos para el número de proyectos
         backgroundColor: ['#FF6384'],
       },
     ],
   };
 
-  return (
-    <div className="min-h-screen bg-gray-100 flex">
-      <div className="w-64 bg-white shadow-lg">
-        <div className="px-4 py-6">
-          <h2 className="text-2xl font-semibold text-black">Dashboard</h2>
-        </div>
-        <nav className="mt-10">
-          <ul>
-            <li className="mb-2">
-              <a href="#" className="block px-4 py-2 text-black hover:bg-blue-600 hover:text-white rounded-md transition">Vista</a>
-            </li>
-            <li className="mb-2">
-              <a href="#" className="block px-4 py-2 text-black hover:bg-blue-600 hover:text-white rounded-md transition">Análisis</a>
-            </li>
-            <li className="mb-2">
-              <a href="#" className="block px-4 py-2 text-black hover:bg-blue-600 hover:text-white rounded-md transition">Bookings</a>
-            </li>
-          </ul>
-        </nav>
-      </div>
-
-      {/*Contenedor de todo*/}
-      <div className="flex-1 p-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-semibold text-black">Dashboard</h1>
+  return (     
+      <div className="flex-1 p-6 bg-gray-100 flex flex-col items-center justify-start min-h-screen">
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-4xl font-bold text-black text-center">Dashboard</h1>
         </div>
 
-        <div className="mt-8">
-          {/*Tarjetas*/}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl border border-black transition">
-              <h3 className="text-xl font-semibold text-black mb-4">Nombre de Proyectos</h3>
-              <ul>
-                {/* Renderiza los nombres de los proyectos */}
-                {projects.length > 0 ? (
-                  projects.map((project) => (
-                    <li key={project._id} className="text-black text-lg">
-                      {project.name}
-                    </li>
-                  ))
-                ) : (
-                  <p className="text-black">No hay proyectos</p>
-                )}
-              </ul>
-            </div>
-            <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl border border-black transition">
-              <h3 className="text-xl font-semibold text-black mb-4">Ganado</h3>
-              <p className="text-2xl font-bold text-black">$12,345</p>
-            </div>
-            {/* Tarjeta de proyectos */}
-            <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl border border-black transition">
-              <h3 className="text-xl font-semibold text-black mb-4">Proyectos</h3>
-              <p className="text-2xl font-bold text-black">{projectCount}</p> {/* Mostrar el número de proyectos */}
-            </div>
-            <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl border border-black transition">
-              <h3 className="text-xl font-semibold text-black mb-4">Usuarios</h3>
-              {/*Muestra el número de usuarios de la base de datos*/}
-              <p className="text-2xl font-bold text-black">{userCount}</p> 
-            </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl mb-8">
+          <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl border border-black transition">
+            <h3 className="text-xl font-semibold text-black mb-4 text-center">Total de Tareas</h3>
+            <p className="text-3xl font-bold text-black">{taskTotalCount}</p> {/*Muestra el número total de tareas*/}
           </div>
+          <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl border border-black transition">
+            <h3 className="text-xl font-semibold text-black mb-4 text-center">Roles de Usuarios</h3>
+            <p className="text-lg font-bold text-black">Admin: {roleCount.Admin}</p>
+            <p className="text-lg font-bold text-black">Project Manager: {roleCount.ProjectManager}</p>
+            <p className="text-lg font-bold text-black">Team Member: {roleCount.TeamMember}</p>
+          </div>
+          <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl border border-black transition">
+            <h3 className="text-xl font-semibold text-black mb-4 text-center">Usuarios</h3>
+            <p className="text-3xl font-bold text-black">{userCount}</p> {/*Muestra el número de usuarios*/}
+          </div>
+        </div>
 
-          {/*Gráficos*/}
-          <div className="mt-12 bg-white p-6 rounded-lg shadow-lg border border-black">
-            <h3 className="text-xl font-semibold text-black mb-4">Vista de análisis</h3>
+        {/* Gráficos */} 
+        <div className="bg-white p-6 rounded-lg shadow-lg border border-black w-full max-w-6xl">
+          <h3 className="text-xl font-semibold text-black mb-4 text-center">Vista de análisis</h3>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/*Gráfico de pastel*/}
-              <div className="bg-white p-4 rounded-lg shadow-lg border border-black">
-                <h4 className="text-center font-semibold text-black">Porcentaje Completado</h4>
-                <Pie data={projectoCompleto} options={options} />
-              </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Gráfico de pastel de tareas */}
+            <div className="bg-white p-4 rounded-lg shadow-lg border border-black">
+              <h4 className="text-center text-lg font-semibold text-black mb-2">Estadísticas de Tareas</h4>
+              <Pie data={tareas} />
+            </div>
 
-              {/*Gráfico de barras*/}
-              <div className="bg-white p-4 rounded-lg shadow-lg border border-black">
-                <h4 className="text-center font-semibold text-black">Tareas</h4>
-                <Bar data={tareas} options={options} />
-              </div>
-
-              {/*Gráfico de proyectos*/}
-              <div className="bg-white p-4 rounded-lg shadow-lg border border-black">
-                <h4 className="text-center font-semibold text-black">Proyectos</h4>
-                <Bar data={projectoInfo} options={options} />
-              </div>
+            {/* Gráfico de proyectos totales */}
+            <div className="bg-white p-4 rounded-lg shadow-lg border border-black">
+              <h4 className="text-center text-lg font-semibold text-black mb-2">Total de Proyectos</h4>
+              <Bar data={projectoInfo} options={options} />
             </div>
           </div>
         </div>
       </div>
-    </div>
   );
 }
 

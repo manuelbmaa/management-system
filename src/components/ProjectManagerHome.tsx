@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import CommentsSection from "./CommentsSection";
 
-interface Task {
+export interface Task {
   name: string;
   description: string;
   assignedTo: string; // ID del miembro al que está asignado
@@ -18,7 +18,7 @@ export interface Project {
   tasks: Task[];
 }
 
-interface Member {
+export interface Member {
   _id: string;
   fullname: string;
   email: string;
