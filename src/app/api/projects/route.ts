@@ -31,11 +31,14 @@ export async function GET(request: NextRequest) {
       projects = await projectsCollection.find({ members: { $in: [memberId] } }).toArray();
 
       console.log("Proyectos encontrados para el miembro:", projects);
-    } else {
+    } else if (managerId) {
       // Obtener todos los proyectos por project manager
       projects = await projectsCollection.find({
         managerId
       }).toArray();
+    } else {
+      // Obtener todos los proyectos
+      projects = await projectsCollection.find().toArray();
     }
 
     return NextResponse.json(projects);

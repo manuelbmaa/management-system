@@ -70,7 +70,15 @@ function DashboardPage() {
   //Función para obtener la lista de proyectos
   const fetchProjects = async () => {
     try {
-      const response = await fetch("/api/projects");
+      let uri = "";
+
+      if (session?.user.role === "Admin") {
+        uri = "/api/projects";
+      } else {
+        uri = `/api/projects?managerId=${session?.user._id}`;
+      }
+
+      const response = await fetch(uri);
       const data = await response.json();
       if (data) {
         setProjectCount(data.length); //Se establece el número total de proyectos
@@ -166,13 +174,23 @@ function DashboardPage() {
             <h3 className="text-xl font-semibold text-black mb-4 text-center">Total de Tareas</h3>
             <p className="text-3xl font-bold text-black">{taskTotalCount}</p> {/*Muestra el número total de tareas*/}
           </div>
-          <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl border border-black transition">
+          <div
+            className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl border border-black transition"
+            style={{
+              display: session?.user.role === "Admin" ? "" : "none",
+            }}
+          >
             <h3 className="text-xl font-semibold text-black mb-4 text-center">Roles de Usuarios</h3>
             <p className="text-lg font-bold text-black">Admin: {roleCount.Admin}</p>
             <p className="text-lg font-bold text-black">Project Manager: {roleCount.ProjectManager}</p>
             <p className="text-lg font-bold text-black">Team Member: {roleCount.TeamMember}</p>
           </div>
-          <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl border border-black transition">
+          <div
+            className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl border border-black transition"
+            style={{
+              display: session?.user.role === "Admin" ? "" : "none",
+            }}
+          >
             <h3 className="text-xl font-semibold text-black mb-4 text-center">Usuarios</h3>
             <p className="text-3xl font-bold text-black">{userCount}</p> {/*Muestra el número de usuarios*/}
           </div>
