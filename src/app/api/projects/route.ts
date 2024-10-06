@@ -8,6 +8,7 @@ export async function GET(request: NextRequest) {
   const client = new MongoClient(uri);
   const id = request.nextUrl.searchParams.get("id");
   const memberId = request.nextUrl.searchParams.get("memberId");
+  const managerId = request.nextUrl.searchParams.get("managerId");
 
   try {
     await client.connect();
@@ -31,8 +32,10 @@ export async function GET(request: NextRequest) {
 
       console.log("Proyectos encontrados para el miembro:", projects);
     } else {
-      // Obtener todos los proyectos
-      projects = await projectsCollection.find().toArray();
+      // Obtener todos los proyectos por project manager
+      projects = await projectsCollection.find({
+        managerId
+      }).toArray();
     }
 
     return NextResponse.json(projects);
@@ -46,6 +49,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   const client = new MongoClient(uri);
+  
   try {
     const newProject = await request.json();
     await client.connect();
@@ -58,6 +62,7 @@ export async function POST(request: NextRequest) {
       members: newProject.members || [],
       tasks: newProject.tasks || [],
       comments: newProject.comments || [],
+      managerId: newProject.memberId || null,
     };
 
     const result = await projectsCollection.insertOne(projectToInsert);

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react"; 
 import axios from "axios";
 import Swal from "sweetalert2";
 import AdminEditUser from "./AdminEditUser";
@@ -29,11 +30,12 @@ const AdminUserManagement = () => {
     userId: null,
   });
   const [isCreateUserOpen, setIsCreateUserOpen] = useState(false);
+  const { data: session } = useSession();
 
   // Función para obtener la lista de usuarios
   const fetchUsers = async () => {
     try {
-      const res = await axios.get("/api/users");
+      const res = await axios.get(`/api/users?userLogueado=${session?.user._id}`);
       setUsers(res.data.users); // Actualiza la lista de usuarios
     } catch (error) {
       console.error("Failed to fetch users:", error);

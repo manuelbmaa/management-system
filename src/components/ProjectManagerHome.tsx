@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useSession } from "next-auth/react"; 
 import axios from "axios";
 
 export interface Task {
@@ -12,6 +13,7 @@ export interface Project {
   _id?: string;
   name: string;
   description: string;
+  memberId: string | null | undefined,
   status: string; // "Iniciado", "En progreso", "Completado"
   members: string[];
   tasks: Task[];
@@ -35,11 +37,12 @@ const ProjectManagerHome = () => {
   const [editProjectId, setEditProjectId] = useState<string | null>(null);
   // const [currentUser, setCurrentUser] = useState<Member | null>(null);
   const [editTaskIndex, setEditTaskIndex] = useState<number | null>(null);
+  const { data: session } = useSession();
 
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await axios.get("/api/projects");
+        const response = await axios.get(`/api/projects?managerId=${session?.user._id}`);
         setProjects(response.data);
       } catch (error) {
         console.error("Error fetching projects:", error);
@@ -81,6 +84,7 @@ const ProjectManagerHome = () => {
           id: editProjectId,
           name,
           description,
+          memberId: session?.user._id
         });
         setProjects(
           projects.map((project) =>
@@ -99,6 +103,7 @@ const ProjectManagerHome = () => {
       const newProject: Project = {
         name,
         description,
+        memberId: session?.user._id,
         status: "Iniciado",
         members: [],
         tasks: [],

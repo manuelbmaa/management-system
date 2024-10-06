@@ -7,6 +7,7 @@ import bcrypt from 'bcrypt';
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url); // Extrae los parámetros de la URL
   const userId = searchParams.get('userId'); // Obtiene el 'userId' de los parámetros si existe
+  const userLogueado = searchParams.get('userLogueado');
 
   try {
     await connectDB(); // Conectar a la base de datos
@@ -18,7 +19,11 @@ export async function GET(request: Request) {
       }
       return NextResponse.json(user, { status: 200 });
     } else {
-      const users = await User.find();
+      const users = await User.find({
+        _id: {
+          $ne: userLogueado,
+        }
+      });
       return NextResponse.json({ users }, { status: 200 });
     }
   } catch (error) {
