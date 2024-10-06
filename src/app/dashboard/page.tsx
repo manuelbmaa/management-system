@@ -87,7 +87,7 @@ function DashboardPage() {
           totalTareas += project.tasks.length;
           project.tasks.forEach((task) => {
             console.log('Tarea:', task.name, 'Estado:', task.status); //Registro para verificar el estado de las tareas
-            if (task.status === 'Completa') {
+            if (task.status === 'Completado') {
               realizadas += 1;
             } else if (task.status === 'Pendiente') {
               pendientes += 1;
