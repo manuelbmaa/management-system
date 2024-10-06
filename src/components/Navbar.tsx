@@ -30,7 +30,7 @@ function Navbar() {
       confirmButtonText: "Yes, log out",
       cancelButtonText: "Cancel",
     });
-  
+
     if (result.isConfirmed) {
       await signOut({ redirect: false });
       router.push("/login"); // Redirige al login tras cerrar sesión
@@ -40,6 +40,8 @@ function Navbar() {
   const toggleMenu = () => {
     setIsOpen(!isOpen); // Toggle the accordion
   };
+
+  const userHasAccess = session?.user?.role === 'Admin' || session?.user?.role === 'ProjectManager';
 
   return (
     <nav className="bg-white border-blue-200 dark:bg-gray-900">
@@ -96,15 +98,17 @@ function Navbar() {
                     Home
                   </Link>
                 </li>
-                <li>
-                  <Link
-                    href="/dashboard"
-                    className="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white"
-                    aria-current="page"
-                  >
-                    Dashboard
-                  </Link>
-                </li>
+                {userHasAccess && (
+                  <li>
+                    <Link
+                      href="/dashboard"
+                      className="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white"
+                      aria-current="page"
+                    >
+                      Dashboard
+                    </Link>
+                  </li>
+                )}
                 <li>
                   <button
                     onClick={handleSignOut}
