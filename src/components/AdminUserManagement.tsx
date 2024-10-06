@@ -74,6 +74,7 @@ const AdminUserManagement = () => {
       Swal.fire("Success", "User created successfully!", "success");
       fetchUsers(); // Actualiza la lista después de crear un nuevo usuario
     } catch (error) {
+      console.error("Failed to create user:", error);
       Swal.fire("Error", "Failed to create user", "error");
     }
   };
