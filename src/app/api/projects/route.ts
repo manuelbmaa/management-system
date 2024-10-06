@@ -100,15 +100,18 @@ export async function PUT(request: NextRequest) {
       };
       await projectsCollection.updateOne({ _id: new ObjectId(id) }, updateQuery);
     } else if (typeof deleteTaskIndex === "number") {
-      // Eliminar una tarea específica
-      await projectsCollection.updateOne(
-        { _id: new ObjectId(id) },
-        { $unset: { [`tasks.${deleteTaskIndex}`]: "" } }
-      );
-      await projectsCollection.updateOne(
-        { _id: new ObjectId(id) },
-        { $pull: { tasks: null } }
-      );
+      // Eliminar una tarea específica sin dejar null
+      const project = await projectsCollection.findOne({ _id: new ObjectId(id) });
+      if (project && Array.isArray(project.tasks)) {
+        // Filtrar las tareas para eliminar la tarea en el índice especificado
+        const filteredTasks = project.tasks.filter((_, index) => index !== deleteTaskIndex);
+
+        // Actualizar el documento con las tareas filtradas
+        await projectsCollection.updateOne(
+          { _id: new ObjectId(id) },
+          { $set: { tasks: filteredTasks } }
+        );
+      }
     } else {
       // Actualizar otros campos del proyecto
       await projectsCollection.updateOne(

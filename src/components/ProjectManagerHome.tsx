@@ -50,7 +50,9 @@ const ProjectManagerHome = () => {
       try {
         const response = await axios.get("/api/users");
         // Filtrar solo los usuarios que tienen el rol "TeamMember"
-        const teamMembers = response.data.users.filter((member: Member) => member.role === "TeamMember");
+        const teamMembers = response.data.users.filter(
+          (member: Member) => member.role === "TeamMember"
+        );
         setMembers(teamMembers);
       } catch (error) {
         console.error("Error fetching members:", error);
@@ -82,7 +84,9 @@ const ProjectManagerHome = () => {
         });
         setProjects(
           projects.map((project) =>
-            project._id === editProjectId ? { ...project, name, description } : project
+            project._id === editProjectId
+              ? { ...project, name, description }
+              : project
           )
         );
         setEditProjectId(null);
@@ -218,7 +222,9 @@ const ProjectManagerHome = () => {
 
   return (
     <div className="bg-black p-6">
-      <h1 className="text-2xl font-bold mb-4 tex-black">Gestión de Proyectos</h1>
+      <h1 className="text-2xl font-bold mb-4 tex-black">
+        Gestión de Proyectos
+      </h1>
       <div className="mb-4">
         <input
           type="text"
@@ -314,26 +320,34 @@ const ProjectManagerHome = () => {
                   {project.tasks.map((task, index) => (
                     <li key={index} className="border p-2 mt-2">
                       <p>
-                        <strong>Tarea:</strong> {task.name}
+                        <strong>Tarea:</strong> {task?.name || "Sin nombre"}
                       </p>
                       <p>
-                        <strong>Descripción:</strong> {task.description}
+                        <strong>Descripcion:</strong>{" "}
+                        {task?.description || "Sin nombre"}
                       </p>
                       <p>
                         <strong>Asignado a:</strong>{" "}
-                        {members.find((m) => m._id === task.assignedTo)?.fullname}
+                        {task
+                          ? members.find((m) => m._id === task.assignedTo)
+                              ?.fullname || "Sin asignar"
+                          : "Sin asignar"}
                       </p>
                       <p>
-                        <strong>Estado:</strong> {task.status}
+                        <strong>Estado:</strong> {task?.status || "Pendiente"}
                       </p>
                       <button
-                        onClick={() => handleEditTask(project._id as string, index)}
+                        onClick={() =>
+                          handleEditTask(project._id as string, index)
+                        }
                         className="bg-yellow-500 text-white px-4 py-2 rounded mt-2 mr-2"
                       >
                         Editar Tarea
                       </button>
                       <button
-                        onClick={() => handleDeleteTask(project._id as string, index)}
+                        onClick={() =>
+                          handleDeleteTask(project._id as string, index)
+                        }
                         className="bg-red-500 text-white px-4 py-2 rounded mt-2"
                       >
                         Eliminar Tarea
@@ -343,8 +357,6 @@ const ProjectManagerHome = () => {
                 </ul>
               </div>
             )}
-
-
           </div>
         ))
       ) : (
