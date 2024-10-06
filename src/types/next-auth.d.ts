@@ -4,6 +4,7 @@ import NextAuth from "next-auth";
 declare module "next-auth" {
   interface Session {
     user: {
+      _id: string | null,
       role: string;  // Agregar 'role' al objeto 'user'
       name: string | null;
       email: string | null;

@@ -29,7 +29,7 @@ const TeamMemberHome = () => {
       if (status === "authenticated" && session?.user) {
         try {
           // Asegúrate de que `session.user.id` existe y tiene el ID del usuario.
-          const userId = session?.user.id || session?.user._id;
+          const userId = session?.user._id;
 
           if (userId) {
             console.log("Usuario autenticado con ID:", userId); // Log para depurar
@@ -117,7 +117,7 @@ const TeamMemberHome = () => {
                 <h4 className="text-white font-bold">Tus Tareas</h4>
                 <ul>
                   {project.tasks
-                    .filter((task) => task.assignedTo === session?.user.id || task.assignedTo === session?.user._id)
+                    .filter((task) => task.assignedTo === session?.user._id || task.assignedTo === session?.user._id)
                     .map((task, index) => (
                       <li key={index} className="text-white border p-2 mt-2">
                         <p>
