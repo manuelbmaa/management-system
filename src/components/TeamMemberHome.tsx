@@ -92,35 +92,34 @@ const TeamMemberHome = () => {
   };
 
   return (
-    <div className="bg-white border-blue-200 dark:bg-gray-900 text-white p-6 min-h-screen">
+    <div className="bg-black border-blue-200 text-white p-6 min-h-screen">
       <h1 className="text-2xl font-bold mb-4">Welcome, Team Member</h1>
       <p className="mb-4">Here you can view your tasks and project updates.</p>
 
-      <h2 className="text-xl font-bold mb-4">Proyectos Asignados</h2>
+      <h2 className="text-xl text-white font-bold mb-4">Proyectos Asignados</h2>
       {projects.length > 0 ? (
         projects.map((project) => (
           <div key={project._id} 
           style={{
-            backgroundImage: "url('https://i.pinimg.com/736x/ca/50/48/ca5048b612d64c70083348c58bfc99bb.jpg')",
+            backgroundImage: "url('https://t3.ftcdn.net/jpg/05/93/52/12/360_F_593521259_FTBggkMSTck8OKcMhZe9KZUkXFuVB3FG.jpg')",
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-            color: 'black',
             fontFamily: 'verdana'
           }}
           className=" bg-green-900 border p-4 mb-4">
-            <h3 className="text-lg font-bold">{project.name}</h3>
+            <h3 className="text-lg text-white font-bold">{project.name}</h3>
             <p>{project.description}</p>
             <p>Estado del Proyecto: {project.status}</p>
 
             {/* Mostrar Tareas Asignadas */}
             {project.tasks.length > 0 && (
               <div className="mt-4">
-                <h4 className="font-bold">Tus Tareas</h4>
+                <h4 className="text-white font-bold">Tus Tareas</h4>
                 <ul>
                   {project.tasks
                     .filter((task) => task.assignedTo === session?.user.id || task.assignedTo === session?.user._id)
                     .map((task, index) => (
-                      <li key={index} className="border p-2 mt-2">
+                      <li key={index} className="text-white border p-2 mt-2">
                         <p>
                           <strong>Tarea:</strong> {task.name}
                         </p>
