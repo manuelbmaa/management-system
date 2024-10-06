@@ -3,11 +3,15 @@
 import { Pie, Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement } from 'chart.js';
 import { useState, useEffect } from 'react';
+import { Project } from "../../components/ProjectManagerHome"; 
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
 
 function DashboardPage() {
   const [userCount, setUserCount] = useState(0); //Estado para almacenar el número de usuarios
+  const [projectCount, setProjectCount] = useState(0);
+  const [projects, setProjects] = useState<Project[]>([]); 
+  
 
   //Función para obtener el número de usuarios
   const fetchUserCount = async () => {
@@ -23,6 +27,41 @@ function DashboardPage() {
   useEffect(() => {
     fetchUserCount(); 
   }, []);
+
+    // Función para obtener la lista de proyectos desde la API
+    const fetchProjects = async () => {
+      try {
+        const response = await fetch("/api/projects");
+        const data = await response.json();
+        if (data) {
+          setProjects(data); // Establece la lista de proyectos
+        }
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+      }
+    };
+  
+    useEffect(() => {
+      fetchProjects();
+    }, []);
+
+    // Función para obtener el número de proyectos desde la API
+    const fetchProjectCount = async () => {
+      try {
+        const response = await fetch("/api/projects");
+        const data = await response.json();
+        if (data) {
+          setProjectCount(data.length); // Establece la cantidad de proyectos
+        }
+      } catch (error) {
+        console.error("Error fetching project count:", error);
+      }
+    };
+  
+    useEffect(() => {
+      fetchProjectCount();
+    }, []);
+  
   //Configuración para color labels
   const options = {
     plugins: {
@@ -107,27 +146,38 @@ function DashboardPage() {
       <div className="flex-1 p-6">
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-semibold text-black">Dashboard</h1>
-          <button className="bg-blue-700 text-white px-4 py-2 rounded-md hover:bg-blue-800 transition">Crear nuevo</button>
         </div>
 
         <div className="mt-8">
           {/*Tarjetas*/}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl border border-black transition">
-              <h3 className="text-xl font-semibold text-black mb-4">Bookings</h3>
-              <p className="text-2xl font-bold text-black">245</p>
+              <h3 className="text-xl font-semibold text-black mb-4">Nombre de Proyectos</h3>
+              <ul>
+                {/* Renderiza los nombres de los proyectos */}
+                {projects.length > 0 ? (
+                  projects.map((project) => (
+                    <li key={project._id} className="text-black text-lg">
+                      {project.name}
+                    </li>
+                  ))
+                ) : (
+                  <p className="text-black">No hay proyectos</p>
+                )}
+              </ul>
             </div>
             <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl border border-black transition">
               <h3 className="text-xl font-semibold text-black mb-4">Ganado</h3>
               <p className="text-2xl font-bold text-black">$12,345</p>
             </div>
+            {/* Tarjeta de proyectos */}
             <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl border border-black transition">
-              <h3 className="text-xl font-semibold text-black mb-4">Visitantes</h3>
-              <p className="text-2xl font-bold text-black">300</p>
+              <h3 className="text-xl font-semibold text-black mb-4">Proyectos</h3>
+              <p className="text-2xl font-bold text-black">{projectCount}</p> {/* Mostrar el número de proyectos */}
             </div>
             <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl border border-black transition">
               <h3 className="text-xl font-semibold text-black mb-4">Usuarios</h3>
-              {/* Muestra el número de usuarios de la base de datos */}
+              {/*Muestra el número de usuarios de la base de datos*/}
               <p className="text-2xl font-bold text-black">{userCount}</p> 
             </div>
           </div>

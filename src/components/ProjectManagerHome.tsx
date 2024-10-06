@@ -9,7 +9,7 @@ interface Task {
   status: string; // Puede ser "Pendiente", "En progreso", "Completa"
 }
 
-interface Project {
+export interface Project {
   _id?: string;
   name: string;
   description: string;
