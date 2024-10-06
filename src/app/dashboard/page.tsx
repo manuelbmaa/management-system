@@ -6,12 +6,12 @@ import { useState, useEffect } from 'react';
 import { Project } from "../../components/ProjectManagerHome"; 
 import { Member } from "../../components/ProjectManagerHome"; 
 import { useRouter } from 'next/navigation';
-import { useSession } from "next-auth/react";  // Importa useSession de NextAuth
+import { useSession } from "next-auth/react";  //Importa useSession de NextAuth
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
 
 function DashboardPage() {
-  const { data: session, status } = useSession();  // Accede a la sesión y al estado de autenticación
+  const { data: session, status } = useSession();  //Accede a la sesión y al estado de autenticación
   const router = useRouter();
   const [userCount, setUserCount] = useState(0); //Estado para el número de usuarios
   const [taskTotalCount, setTaskTotalCount] = useState(0); // stado para el total de tareas
@@ -24,15 +24,15 @@ function DashboardPage() {
     TeamMember: 0,
   });
   useEffect(() => {
-    // Si el estado de autenticación es "authenticated", verifica el rol del usuario
+    //Si el estado de autenticación es "authenticated", verifica el rol del usuario
     if (status === "authenticated") {
-      const userRole = session?.user?.role;  // Asume que el rol del usuario está almacenado en session.user.role
+      const userRole = session?.user?.role;
 
       if (userRole !== "Admin" && userRole !== "ProjectManager") {
-        router.push("/access-denied");  // Redirige si no es Admin o Project Manager
+        router.push("/access-denied");  //Redirige si no es Admin o Project Manager
       }
     } else if (status === "unauthenticated") {
-      router.push("/login");  // Redirige al login si no está autenticado
+      router.push("/login");  //Redirige al login si no está autenticado
     }
   }, [status, session, router]);
 
