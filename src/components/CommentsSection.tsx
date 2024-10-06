@@ -48,7 +48,7 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ projectId, currentUse
   };
 
   return (
-    <div className="mt-4">
+    <div className="bg-gray mt-4">
       <h4>Comentarios y Actualizaciones</h4>
       {comments.map((comment, index) => (
         <div key={index} className="border-b py-2">

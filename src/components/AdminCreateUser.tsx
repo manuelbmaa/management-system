@@ -21,7 +21,7 @@ const AdminCreateUser = ({ onClose, onCreateUser }: AdminCreateUserProps) => {
 
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">
-      <div className="bg-white p-4 rounded shadow-lg w-96">
+      <div className="bg-gray-900 p-4 rounded shadow-lg w-96">
         <h2 className="text-xl font-bold mb-4">Create User</h2>
         <form onSubmit={handleSubmit}>
           <label>Email:</label>
@@ -29,7 +29,7 @@ const AdminCreateUser = ({ onClose, onCreateUser }: AdminCreateUserProps) => {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="border p-2 mb-4 w-full"
+            className="bg-black border p-2 mb-4 w-full"
             required
           />
           <label>Full Name:</label>
@@ -37,7 +37,7 @@ const AdminCreateUser = ({ onClose, onCreateUser }: AdminCreateUserProps) => {
             type="text"
             value={fullname}
             onChange={(e) => setFullname(e.target.value)}
-            className="border p-2 mb-4 w-full"
+            className="bg-black border p-2 mb-4 w-full"
             required
           />
           <label>Password:</label>
@@ -45,14 +45,14 @@ const AdminCreateUser = ({ onClose, onCreateUser }: AdminCreateUserProps) => {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="border p-2 mb-4 w-full"
+            className="bg-black border p-2 mb-4 w-full"
             required
           />
           <label>Role:</label>
           <select
             value={role}
             onChange={(e) => setRole(e.target.value)}
-            className="border p-2 mb-4 w-full"
+            className="bg-black border p-2 mb-4 w-full"
           >
             <option value="Admin">Admin</option>
             <option value="ProjectManager">Project Manager</option>

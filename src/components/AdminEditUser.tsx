@@ -34,7 +34,7 @@ const AdminEditUser = ({ userId, onClose, onSave }: { userId: string; onClose: (
 
   return (
     <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex justify-center items-center">
-      <div className="bg-white p-6 rounded-lg w-96">
+      <div className="bg-black p-6 rounded-lg w-96">
         <h2 className="text-2xl font-bold mb-4">Edit User</h2>
         <form onSubmit={handleUpdateUser}>
           <div className="mb-4">
@@ -43,7 +43,7 @@ const AdminEditUser = ({ userId, onClose, onSave }: { userId: string; onClose: (
               placeholder="Full name"
               value={fullname}
               onChange={(e) => setFullname(e.target.value)}
-              className="w-full p-2 border rounded"
+              className="bg-gray-900 w-full p-2 border rounded"
               required
             />
           </div>
@@ -53,7 +53,7 @@ const AdminEditUser = ({ userId, onClose, onSave }: { userId: string; onClose: (
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-2 border rounded"
+              className="bg-gray-900 w-full p-2 border rounded"
               required
             />
           </div>
@@ -61,7 +61,7 @@ const AdminEditUser = ({ userId, onClose, onSave }: { userId: string; onClose: (
             <select
               value={role}
               onChange={(e) => setRole(e.target.value)}
-              className="w-full p-2 border rounded"
+              className="bg-gray-900 w-full p-2 border rounded"
             >
               <option value="Admin">Admin</option>
               <option value="ProjectManager">Project Manager</option>
@@ -71,7 +71,7 @@ const AdminEditUser = ({ userId, onClose, onSave }: { userId: string; onClose: (
           <div className="flex justify-end">
             <button
               type="button"
-              className="bg-gray-500 text-white px-4 py-2 mr-2 rounded"
+              className="bg-gray-900 bg-gray-500 text-white px-4 py-2 mr-2 rounded"
               onClick={onClose}
             >
               Cancel

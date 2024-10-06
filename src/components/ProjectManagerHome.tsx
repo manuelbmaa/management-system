@@ -2,14 +2,14 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import CommentsSection from "./CommentsSection";
 
-interface Task {
+export interface Task {
   name: string;
   description: string;
   assignedTo: string; // ID del miembro al que está asignado
   status: string; // Puede ser "Pendiente", "En progreso", "Completa"
 }
 
-interface Project {
+export interface Project {
   _id?: string;
   name: string;
   description: string;
@@ -18,7 +18,7 @@ interface Project {
   tasks: Task[];
 }
 
-interface Member {
+export interface Member {
   _id: string;
   fullname: string;
   email: string;
@@ -218,21 +218,21 @@ const ProjectManagerHome = () => {
   };
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Gestión de Proyectos</h1>
+    <div className="bg-black p-6">
+      <h1 className="text-2xl font-bold mb-4 tex-black">Gestión de Proyectos</h1>
       <div className="mb-4">
         <input
           type="text"
           placeholder="Nombre del proyecto"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="p-2 border mb-2 w-full"
+          className="bg-gray-900 p-2 border mb-2 w-full"
         />
         <textarea
           placeholder="Descripción del proyecto"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          className="p-2 border w-full"
+          className="bg-gray-900 p-2 border w-full"
         />
         <button
           onClick={handleCreateOrEditProject}
@@ -274,18 +274,18 @@ const ProjectManagerHome = () => {
                 placeholder="Nombre de la tarea"
                 value={taskName}
                 onChange={(e) => setTaskName(e.target.value)}
-                className="p-2 border mb-2 w-full"
+                className="bg-gray-900 p-2 border mb-2 w-full"
               />
               <textarea
                 placeholder="Descripción de la tarea"
                 value={taskDescription}
                 onChange={(e) => setTaskDescription(e.target.value)}
-                className="p-2 border mb-2 w-full"
+                className="bg-gray-900 p-2 border mb-2 w-full"
               />
               <select
                 value={selectedTaskMember}
                 onChange={(e) => setSelectedTaskMember(e.target.value)}
-                className="p-2 border mb-2 w-full"
+                className="bg-gray-900 p-2 border mb-2 w-full"
               >
                 <option value="">Seleccione un miembro para la tarea</option>
                 {members.length > 0 &&
