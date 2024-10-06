@@ -5,12 +5,16 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearSca
 import { useState, useEffect } from 'react';
 import { Project } from "../../components/ProjectManagerHome"; 
 import { Member } from "../../components/ProjectManagerHome"; 
+import { useRouter } from 'next/navigation';
+import { useSession } from "next-auth/react";  // Importa useSession de NextAuth
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
 
 function DashboardPage() {
+  const { data: session, status } = useSession();  // Accede a la sesión y al estado de autenticación
+  const router = useRouter();
   const [userCount, setUserCount] = useState(0); //Estado para el número de usuarios
-  const [taskTotalCount, setTaskTotalCount] = useState(0); //Estado para el total de tareas
+  const [taskTotalCount, setTaskTotalCount] = useState(0); // stado para el total de tareas
   const [projectCount, setProjectCount] = useState(0); //Estado para el número total de proyectos
   const [projects, setProjects] = useState<Project[]>([]); //Estado para la lista de proyectos
   
@@ -19,6 +23,19 @@ function DashboardPage() {
     ProjectManager: 0,
     TeamMember: 0,
   });
+  useEffect(() => {
+    // Si el estado de autenticación es "authenticated", verifica el rol del usuario
+    if (status === "authenticated") {
+      const userRole = session?.user?.role;  // Asume que el rol del usuario está almacenado en session.user.role
+
+      if (userRole !== "Admin" && userRole !== "ProjectManager") {
+        router.push("/access-denied");  // Redirige si no es Admin o Project Manager
+      }
+    } else if (status === "unauthenticated") {
+      router.push("/login");  // Redirige al login si no está autenticado
+    }
+  }, [status, session, router]);
+
 
   //Estado para las tareas agregadas en el gráfico de pastel
   const [taskStats, setTaskStats] = useState({
@@ -69,6 +86,7 @@ function DashboardPage() {
         data.forEach((project: Project) => {
           totalTareas += project.tasks.length;
           project.tasks.forEach((task) => {
+            console.log('Tarea:', task.name, 'Estado:', task.status); //Registro para verificar el estado de las tareas
             if (task.status === 'Completa') {
               realizadas += 1;
             } else if (task.status === 'Pendiente') {
@@ -121,7 +139,7 @@ function DashboardPage() {
     datasets: [
       {
         label: 'Tareas',
-        data: [taskStats.realizadas, taskStats.pendientes, taskStats.finalizadas], //Datos calculados dinámicamente
+        data: [taskStats.realizadas, taskStats.pendientes, taskStats.finalizadas], // Datos calculados dinámicamente
         backgroundColor: ['#36A2EB', '#FFCE56', '#FF6384'],
       },
     ],
@@ -145,7 +163,6 @@ function DashboardPage() {
           <h1 className="text-4xl font-bold text-black text-center">Dashboard</h1>
         </div>
 
-        
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl mb-8">
           <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl border border-black transition">
             <h3 className="text-xl font-semibold text-black mb-4 text-center">Total de Tareas</h3>
@@ -163,18 +180,18 @@ function DashboardPage() {
           </div>
         </div>
 
-        {/*Gráficos*/} 
+        {/* Gráficos */} 
         <div className="bg-white p-6 rounded-lg shadow-lg border border-black w-full max-w-6xl">
           <h3 className="text-xl font-semibold text-black mb-4 text-center">Vista de análisis</h3>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/*Gráfico de pastel de tareas*/}
+            {/* Gráfico de pastel de tareas */}
             <div className="bg-white p-4 rounded-lg shadow-lg border border-black">
               <h4 className="text-center text-lg font-semibold text-black mb-2">Estadísticas de Tareas</h4>
               <Pie data={tareas} />
             </div>
 
-            {/*Gráfico de proyectos totales*/}
+            {/* Gráfico de proyectos totales */}
             <div className="bg-white p-4 rounded-lg shadow-lg border border-black">
               <h4 className="text-center text-lg font-semibold text-black mb-2">Total de Proyectos</h4>
               <Bar data={projectoInfo} options={options} />
