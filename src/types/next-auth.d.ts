@@ -1,5 +1,3 @@
-import NextAuth from "next-auth";
-
 // Extender los tipos de sesión para incluir 'role' en 'user'
 declare module "next-auth" {
   interface Session {

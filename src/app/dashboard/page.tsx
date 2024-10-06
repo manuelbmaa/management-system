@@ -16,7 +16,6 @@ function DashboardPage() {
   const [userCount, setUserCount] = useState(0); //Estado para el número de usuarios
   const [taskTotalCount, setTaskTotalCount] = useState(0); // stado para el total de tareas
   const [projectCount, setProjectCount] = useState(0); //Estado para el número total de proyectos
-  const [projects, setProjects] = useState<Project[]>([]); //Estado para la lista de proyectos
   
   const [roleCount, setRoleCount] = useState({
     Admin: 0,
@@ -74,7 +73,6 @@ function DashboardPage() {
       const response = await fetch("/api/projects");
       const data = await response.json();
       if (data) {
-        setProjects(data); //Se establece la lista de proyectos
         setProjectCount(data.length); //Se establece el número total de proyectos
 
         //Se calcula estadísticas de tareas y total de tareas

@@ -1,14 +1,5 @@
 "use client";
 
-interface User {
-  _id: string;
-  email: string;
-  fullname: string;
-  role: string;
-}
-
-// AdminUserManagement.tsx
-
 import { useState, useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
@@ -20,6 +11,14 @@ interface User {
   _id: string;
   email: string;
   fullname: string;
+  role: string;
+}
+
+// Definir la interfaz para la creación de usuario (sin _id)
+interface CreateUserData {
+  email: string;
+  fullname: string;
+  password: string;
   role: string;
 }
 
@@ -62,13 +61,14 @@ const AdminUserManagement = () => {
         Swal.fire("Deleted!", "User has been deleted.", "success");
         fetchUsers(); // Actualizar la lista después de eliminar el usuario
       } catch (error) {
+        console.error("Failed to delete user:", error);
         Swal.fire("Error", "Failed to delete user", "error");
       }
     }
   };
 
   // Función para manejar la creación de un nuevo usuario
-  const handleCreateUser = async (userData: any) => {
+  const handleCreateUser = async (userData: CreateUserData) => {
     try {
       await axios.post("/api/users", userData);
       Swal.fire("Success", "User created successfully!", "success");
@@ -119,7 +119,12 @@ const AdminUserManagement = () => {
         </tbody>
       </table>
 
-      {isCreateUserOpen && <AdminCreateUser onClose={() => setIsCreateUserOpen(false)} onCreateUser={handleCreateUser} />}
+      {isCreateUserOpen && (
+        <AdminCreateUser
+          onClose={() => setIsCreateUserOpen(false)}
+          onCreateUser={handleCreateUser}
+        />
+      )}
       {isEditUserOpen.open && (
         <AdminEditUser
           userId={isEditUserOpen.userId!}

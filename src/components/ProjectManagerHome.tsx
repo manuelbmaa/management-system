@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import CommentsSection from "./CommentsSection";
 
 export interface Task {
   name: string;
@@ -34,7 +33,7 @@ const ProjectManagerHome = () => {
   const [taskDescription, setTaskDescription] = useState<string>("");
   const [selectedTaskMember, setSelectedTaskMember] = useState<string>("");
   const [editProjectId, setEditProjectId] = useState<string | null>(null);
-  const [currentUser, setCurrentUser] = useState<Member | null>(null);
+  // const [currentUser, setCurrentUser] = useState<Member | null>(null);
   const [editTaskIndex, setEditTaskIndex] = useState<number | null>(null);
 
   useEffect(() => {
@@ -59,18 +58,18 @@ const ProjectManagerHome = () => {
       }
     };
 
-    const fetchCurrentUser = async () => {
-      try {
-        const response = await axios.get("/api/currentUser");
-        setCurrentUser(response.data);
-      } catch (error) {
-        console.error("Error fetching current user:", error);
-      }
-    };
+    // const fetchCurrentUser = async () => {
+    //   try {
+    //     const response = await axios.get("/api/currentUser");
+    //     setCurrentUser(response.data);
+    //   } catch (error) {
+    //     console.error("Error fetching current user:", error);
+    //   }
+    // };
 
     fetchProjects();
     fetchMembers();
-    fetchCurrentUser();
+    // fetchCurrentUser();
   }, []);
 
   const handleCreateOrEditProject = async () => {

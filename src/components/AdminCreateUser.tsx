@@ -1,20 +1,26 @@
-import React from 'react';
-import { useState } from "react";
+import React, { useState } from "react";
+
+interface UserData {
+  email: string;
+  fullname: string;
+  password: string;
+  role: "Admin" | "ProjectManager" | "TeamMember"; // Define los posibles valores de role
+}
 
 interface AdminCreateUserProps {
   onClose: () => void;
-  onCreateUser: (userData: any) => Promise<void>;
+  onCreateUser: (userData: UserData) => Promise<void>;
 }
 
 const AdminCreateUser = ({ onClose, onCreateUser }: AdminCreateUserProps) => {
   const [email, setEmail] = useState("");
   const [fullname, setFullname] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("TeamMember");
+  const [role, setRole] = useState<UserData["role"]>("TeamMember"); // Define el estado con el tipo 'role'
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const userData = { email, fullname, password, role };
+    const userData: UserData = { email, fullname, password, role };
     await onCreateUser(userData);
     onClose(); // Cierra el modal después de la creación del usuario
   };
@@ -51,13 +57,18 @@ const AdminCreateUser = ({ onClose, onCreateUser }: AdminCreateUserProps) => {
           <label>Role:</label>
           <select
             value={role}
-            onChange={(e) => setRole(e.target.value)}
+            onChange={(e) =>
+              setRole(
+                e.target.value as "Admin" | "ProjectManager" | "TeamMember"
+              )
+            }
             className="bg-black border p-2 mb-4 w-full"
           >
             <option value="Admin">Admin</option>
             <option value="ProjectManager">Project Manager</option>
             <option value="TeamMember">Team Member</option>
           </select>
+
           <div className="flex justify-end">
             <button
               type="button"

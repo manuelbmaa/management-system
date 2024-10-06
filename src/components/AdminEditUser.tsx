@@ -28,6 +28,7 @@ const AdminEditUser = ({ userId, onClose, onSave }: { userId: string; onClose: (
       onSave();  // Llama a onSave para actualizar la lista de usuarios
       onClose(); // Cierra el modal tras editar el usuario
     } catch (error) {
+      console.error(error);
       Swal.fire("Error", "Failed to update user", "error");
     }
   };

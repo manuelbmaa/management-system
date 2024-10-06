@@ -22,6 +22,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ users }, { status: 200 });
     }
   } catch (error) {
+    console.error(error);
     return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
   }
 }
@@ -44,6 +45,7 @@ export async function DELETE(request: Request) {
     }
     return NextResponse.json({ message: "User deleted" }, { status: 200 });
   } catch (error) {
+    console.error(error);
     return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
   }
 }
@@ -66,6 +68,7 @@ export async function PUT(request: Request) {
     }
     return NextResponse.json(updatedUser, { status: 200 });
   } catch (error) {
+    console.error(error);
     return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
   }
 }
@@ -97,6 +100,7 @@ export async function POST(request: Request) {
     await newUser.save();
     return NextResponse.json({ message: "User created successfully" }, { status: 201 });
   } catch (error) {
+    console.error(error);
     return NextResponse.json({ message: "Failed to create user" }, { status: 500 });
   }
 }
