@@ -17,10 +17,17 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        <div style={{
+        backgroundImage: "url('https://www.womgp.com/blog/wp-content/uploads/2020/12/creatividad-empresarial.jpg')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        minHeight: '100vh', 
+      }}>
         <Providers>
           <Navbar />
           {children}
         </Providers>
+        </div>
       </body>
     </html>
   );
