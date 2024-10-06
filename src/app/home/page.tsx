@@ -11,23 +11,19 @@ function HomePage() {
   const router = useRouter();
 
   useEffect(() => {
-    if (status === "loading") return; // Evita hacer algo mientras se carga
-
     // Si el estado de autenticación es "authenticated", verifica el rol del usuario
-    if (status === "authenticated") {
-      const userRole = session?.user?.role;
-
-      if (userRole !== "Admin" && userRole !== "ProjectManager") {
-        router.push("/access-denied");  // Redirige si no es Admin o Project Manager
-      }
-    } else if (status === "unauthenticated") {
+    if (status === "unauthenticated") {
       router.push("/login");  // Redirige al login si no está autenticado
     }
   }, [status, session, router]);
 
   // Comprobación de acceso antes de renderizar el contenido
-  if (status === "loading" || !session || !session.user) {
+  if (status === "loading") {
     return <div>Loading...</div>; // Muestra un mensaje de carga o acceso denegado
+  }
+
+  if (!session || !session.user) {
+    return <div>Access Denied</div>;
   }
 
   return (
