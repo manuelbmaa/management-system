@@ -82,12 +82,13 @@ const AdminUserManagement = () => {
   };
 
   return (
-    <div className="bg-gray-900 max-w-4xl mx-auto p-4">
+    <div className="bg-gray-900 max-w-full md:max-w-4xl mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">User Management</h1>
       <p className="mb-4">Welcome to the admin page! Here you can manage users by creating new accounts, editing user details, or removing users from the system.</p>
       <button onClick={() => setIsCreateUserOpen(true)} className="bg-blue-500 text-white p-2 rounded mb-4">
         Create User
       </button>
+      <div className="overflow-x-auto">
       <table className="min-w-full table-auto">
         <thead>
           <tr>
@@ -121,6 +122,7 @@ const AdminUserManagement = () => {
           ))}
         </tbody>
       </table>
+      </div>
 
       {isCreateUserOpen && (
         <AdminCreateUser
